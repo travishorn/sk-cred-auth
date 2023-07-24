@@ -6,48 +6,56 @@ import { SqliteError } from 'better-sqlite3';
 export const actions = {
 	default: async ({ request }) => {
 		const form = await request.formData();
-		const email = form.get('email');
-		const password = form.get('password');
-		const confirmPassword = form.get('confirmPassword');
+		const formData = {
+			email: form.get('email'),
+			password: form.get('password'),
+			confirmPassword: form.get('confirmPassword')
+		};
 
-		if (password !== confirmPassword) {
+		if (formData.password !== formData.confirmPassword) {
 			return fail(400, {
 				success: false,
 				error: 'The passwords you entered do not match',
-				data: {
-					email,
-					password,
-					confirmPassword
-				}
+				data: formData
 			});
 		}
 
 		try {
 			await db.raw(
 				`
-	INSERT INTO	User (
-		'email',
-		'password'
-	) VALUES (
-		:email,
-		:password
-	)
+INSERT INTO	User (
+	'email',
+	'password'
+) VALUES (
+	:email,
+	:password
+)
 			`,
 				{
-					email,
-					password
+					email: formData.email,
+					password: formData.password
 				}
 			);
 		} catch (error) {
-			if (error instanceof SqliteError && error.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
-				return fail(400, {
+			if (error instanceof SqliteError) {
+				if (error.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
+					return fail(400, {
+						success: false,
+						error: 'That email address is already registered.',
+						data: formData
+					});
+				} else {
+					return fail(500, {
+						success: false,
+						error: error.code,
+						data: formData
+					});
+				}
+			} else {
+				return fail(500, {
 					success: false,
-					error: 'That email address is already registered.',
-					data: {
-						email,
-						password,
-						confirmPassword
-					}
+					error: 'Something went wrong. Please try again later.',
+					data: formData
 				});
 			}
 		}
