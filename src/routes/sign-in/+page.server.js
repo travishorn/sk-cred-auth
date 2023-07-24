@@ -50,13 +50,13 @@ LIMIT		1
 			await db.raw(
 				`
 INSERT INTO	Session (
-id,
-userEmail,
-expires
+	id,
+	userEmail,
+	expires
 ) VALUES (
-:sessionId,
-:userEmail,
-:expires
+	:sessionId,
+	:userEmail,
+	:expires
 )
 				`,
 				{

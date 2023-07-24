@@ -12,6 +12,7 @@ FROM		Session s
 JOIN		User u
 ON			u.email = s.userEmail
 WHERE		s.id = :sessionId
+AND     s.expires > strftime('%s', 'now')
 LIMIT		1
 		`,
 			{ sessionId }
