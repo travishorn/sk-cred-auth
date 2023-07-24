@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { db } from '$lib/db';
+import { hash } from 'argon2';
 import { SqliteError } from 'better-sqlite3';
 
 /** @type {import('./$types').Actions} */
@@ -12,10 +13,26 @@ export const actions = {
 			confirmPassword: form.get('confirmPassword')
 		};
 
+		if (formData.email === '') {
+			return fail(400, {
+				success: false,
+				error: 'You must enter an email address.',
+				data: formData
+			});
+		}
+
+		if (formData.password === '') {
+			return fail(400, {
+				success: false,
+				error: 'You must enter a password.',
+				data: formData
+			});
+		}
+
 		if (formData.password !== formData.confirmPassword) {
 			return fail(400, {
 				success: false,
-				error: 'The passwords you entered do not match',
+				error: 'The passwords you entered do not match.',
 				data: formData
 			});
 		}
@@ -25,15 +42,15 @@ export const actions = {
 				`
 INSERT INTO	User (
 	'email',
-	'password'
+	'passwordHash'
 ) VALUES (
 	:email,
-	:password
+	:passwordHash
 )
 			`,
 				{
 					email: formData.email,
-					password: formData.password
+					passwordHash: await hash(formData.password?.toString() || '')
 				}
 			);
 		} catch (error) {

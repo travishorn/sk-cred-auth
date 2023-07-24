@@ -2,7 +2,7 @@ export const up = (knex) => {
 	return knex.schema
 		.createTable('User', (table) => {
 			table.text('email');
-			table.text('password').notNullable();
+			table.text('passwordHash').notNullable();
 			table.primary('email');
 		})
 		.createTable('Session', (table) => {
