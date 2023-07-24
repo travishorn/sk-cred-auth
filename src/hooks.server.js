@@ -1,8 +1,5 @@
 import { parse } from 'cookie';
-import knex from 'knex';
-import knexfile from '../knexfile.js';
-
-const db = knex(knexfile[process.env.NODE_ENV || 'development']);
+import { db } from '$lib/db.js';
 
 export const handle = async ({ event, resolve }) => {
 	const sessionId = parse(event.request.headers.get('cookie') || '').sessionId;

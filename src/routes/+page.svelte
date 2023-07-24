@@ -2,8 +2,14 @@
 	import { page } from '$app/stores';
 </script>
 
-<h1>Auth</h1>
-
 {#if $page.data.user}
-	<div>{$page.data.user.email}</div>
+	<div>You are logged in as {$page.data.user.email}.</div>
+
+	<form action="/sign-out" method="post">
+		<button>Sign out</button>
+	</form>
+{:else}
+	<div>You are not signed in.</div>
+	<a href="/sign-in">Sign in</a>
+	<a href="/register">Register</a>
 {/if}
