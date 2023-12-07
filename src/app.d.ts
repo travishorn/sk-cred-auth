@@ -11,7 +11,7 @@ declare global {
 		}
 
 		interface Locals {
-			user: User;
+			user?: User;
 		}
 	}
 }

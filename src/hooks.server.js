@@ -1,6 +1,7 @@
 import { parse } from 'cookie';
 import { db } from '$lib/db.js';
 
+/** @type {import('@sveltejs/kit').Handle} */
 export const handle = async ({ event, resolve }) => {
 	const sessionId = parse(event.request.headers.get('cookie') || '').sessionId;
 
